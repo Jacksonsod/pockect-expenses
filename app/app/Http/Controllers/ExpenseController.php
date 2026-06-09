@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePocketExpenseRequest;
 use App\Http\Requests\UpdatePocketExpenseRequest;
 use App\Models\Expense;
+use Illuminate\Support\Facades\DB;
 
 
 class ExpenseController extends Controller
@@ -14,8 +15,34 @@ class ExpenseController extends Controller
      */
     public function index()
     {
-        $expenses = Expense::latest()->paginate(15);
-        return view('expenses.index', compact('expenses'));
+        // 1. Calculate the financial summary tiles
+        $totalAllTime = Expense::sum('amount');
+        $totalEntries = Expense::count();
+
+        // 2. Calculate the total for the current calendar month
+        $totalThisMonth = Expense::whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->sum('amount');
+
+        // 3. Group expenses by category and calculate total per category
+        $categories = Expense::select('category', DB::raw('SUM(amount) as total'))
+            ->groupBy('category')
+            ->orderBy('total', 'desc')
+            ->get();
+
+        // 4. Calculate percentage weight for each category dynamically
+        $categoryBalances = $categories->map(function ($item) use ($totalAllTime) {
+            $item->percentage = $totalAllTime > 0 ? ($item->total / $totalAllTime) * 100 : 0;
+            return $item;
+        });
+
+        // Pass all dynamic aggregates directly to your view layout
+        return view('expenses.index', [
+            'totalAllTime' => $totalAllTime,
+            'totalThisMonth' => $totalThisMonth,
+            'totalEntries' => $totalEntries,
+            'categoryBalances' => $categoryBalances
+        ]);
     }
 
     /**

@@ -29,7 +29,7 @@
                     <p class="text-[12px] text-slate-400 font-medium tracking-wide leading-tight">Simple expense tracker</p>
                 </div>
             </div>
-            
+
             <a href="{{ route('expenses.create') }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0fa968] hover:bg-[#0d9258] text-white text-[14px] font-semibold rounded-full transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
@@ -42,20 +42,20 @@
     <!-- Main Content -->
     <main class="flex-grow pt-12 pb-12">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            
+
             <!-- Stats -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-11">
                 <div class="bg-white rounded-[20px] border border-gray-100 p-6 shadow-sm">
                     <h2 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">This Month</h2>
-                    <div class="text-[32px] font-extrabold text-slate-800 tracking-tight">$0.00</div>
+                    <div class="text-[32px] font-extrabold text-slate-800 tracking-tight">{{$totalAllTime}}</div>
                 </div>
                 <div class="bg-white rounded-[20px] border border-gray-100 p-6 shadow-sm">
                     <h2 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">All Time</h2>
-                    <div class="text-[32px] font-extrabold text-slate-800 tracking-tight">$487.50</div>
+                    <div class="text-[32px] font-extrabold text-slate-800 tracking-tight">{{$totalAllTime}}</div>
                 </div>
                 <div class="bg-white rounded-[20px] border border-gray-100 p-6 shadow-sm">
                     <h2 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Entries</h2>
-                    <div class="text-[32px] font-extrabold text-slate-800 tracking-tight">6</div>
+                    <div class="text-[32px] font-extrabold text-slate-800 tracking-tight">{{$totalEntries}}</div>
                 </div>
             </div>
 
@@ -78,7 +78,7 @@
             <!-- Insights / Categories List -->
             <div class="bg-white rounded-[20px] border border-gray-100 p-8 shadow-sm mb-12">
                 <h3 class="text-[16px] font-bold text-slate-800 mb-8">Spending by category</h3>
-                
+
                 <div class="space-y-7">
                     <!-- Category Item -->
                     <div>
