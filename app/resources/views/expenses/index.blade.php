@@ -80,27 +80,18 @@
                 <h3 class="text-[16px] font-bold text-slate-800 mb-8">Spending by category</h3>
 
                 <div class="space-y-7">
+                    @foreach($categoryBalances as $category)
                     <!-- Category Item -->
                     <div>
                         <div class="flex justify-between items-end mb-2">
-                            <span class="text-[14px] font-bold text-slate-700">transpot</span>
-                            <span class="text-[14px] font-bold text-slate-800">$447.50</span>
+                            <span class="text-[14px] font-bold text-slate-700">{{ ucfirst($category->category) }}</span>
+                            <span class="text-[14px] font-bold text-slate-800">${{ number_format($category->total, 2) }}</span>
                         </div>
                         <div class="w-full bg-[#f1f5f9] rounded-full h-[10px]">
-                            <div class="bg-[#2ace93] h-[10px] rounded-full" style="width: 90.7%"></div>
+                            <div class="bg-[#2ace93] h-[10px] rounded-full" style="width: {{ $category->percentage }}%"></div>
                         </div>
                     </div>
-
-                    <!-- Category Item -->
-                    <div>
-                        <div class="flex justify-between items-end mb-2">
-                            <span class="text-[14px] font-bold text-slate-700">Housing</span>
-                            <span class="text-[14px] font-bold text-slate-800">$40.00</span>
-                        </div>
-                        <div class="w-full bg-[#f1f5f9] rounded-full h-[10px]">
-                            <div class="bg-[#2ace93] h-[10px] rounded-full" style="width: 8.2%"></div>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
 
