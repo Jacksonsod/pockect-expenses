@@ -116,25 +116,72 @@
                 <!-- Expenses List -->
                 <div class="space-y-4 mb-8">
                     @forelse($recentExpenses as $expense)
-                    <div class="bg-white rounded-[16px] border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow flex items-center justify-between">
-                        <div class="flex flex-col gap-2">
-                            <div class="flex items-center gap-3">
-                                <span class="px-2.5 py-1 bg-[#e0f5eb] text-[#0d9258] text-[11px] font-bold uppercase tracking-wider rounded-md">
-                                    {{ $expense->category }}
-                                </span>
-                                <span class="text-[14px] font-medium text-slate-500">{{ $expense->description ?: 'No note' }}</span>
+                    <div class="bg-white rounded-[20px] border border-gray-100 p-5 shadow-sm hover:shadow-md transition-all flex items-center justify-between group">
+                        <div class="flex items-center gap-5">
+                            <!-- Category Icon -->
+                            @php
+                                $categoryStyles = [
+                                    'Food' => ['icon' => 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5', 'bg' => 'bg-orange-50', 'text' => 'text-orange-500'],
+                                    'Transport' => ['icon' => 'M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0', 'bg' => 'bg-blue-50', 'text' => 'text-blue-500'],
+                                    'Internet Bundle' => ['icon' => 'M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0', 'bg' => 'bg-purple-50', 'text' => 'text-purple-500'],
+                                    'Utilities' => ['icon' => 'M13 10V3L4 14h7v7l9-11h-7z', 'bg' => 'bg-yellow-50', 'text' => 'text-yellow-600'],
+                                    'Entertainment' => ['icon' => 'M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z', 'bg' => 'bg-pink-50', 'text' => 'text-pink-500'],
+                                    'Logistics' => ['icon' => 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4', 'bg' => 'bg-cyan-50', 'text' => 'text-cyan-500'],
+                                    'Others' => ['icon' => 'M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z', 'bg' => 'bg-slate-50', 'text' => 'text-slate-500'],
+                                ];
+                                
+                                $style = $categoryStyles[$expense->category] ?? $categoryStyles['Others'];
+                            @endphp
+
+                            <div class="w-12 h-12 {{ $style['bg'] }} {{ $style['text'] }} rounded-2xl flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $style['icon'] }}"></path>
+                                </svg>
                             </div>
-                            <div class="text-[12px] font-semibold text-slate-400">
-                                {{ $expense->created_at->format('n/j/Y') }}
+
+                            <div class="flex flex-col gap-1">
+                                <span class="text-[15px] font-bold text-slate-800 leading-tight">{{ $expense->description ?: 'Untitled expense' }}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[12px] font-semibold text-slate-400 capitalize">{{ $expense->category }}</span>
+                                    <span class="w-1 h-1 bg-slate-200 rounded-full"></span>
+                                    <span class="text-[12px] font-medium text-slate-400">{{ $expense->created_at->format('j M, Y') }}</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="text-[18px] font-bold text-slate-800">
-                            ${{ number_format($expense->amount, 2) }}
+
+                        <div class="flex items-center gap-6">
+                            <div class="text-[17px] font-extrabold text-slate-800 tracking-tight">
+                                ${{ number_format($expense->amount, 2) }}
+                            </div>
+                            
+                            <!-- Actions -->
+                            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <a href="{{ route('expenses.edit', $expense->id) }}" class="p-2 text-slate-400 hover:text-[#0fa968] hover:bg-emerald-50 rounded-lg transition-all" title="Edit">
+                                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                                <form action="{{ route('expenses.destroy', $expense->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this expense?')" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer" title="Delete">
+                                        <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                     @empty
-                    <div class="text-center py-12 bg-white rounded-[16px] border border-gray-100">
-                        <p class="text-slate-500 font-medium">No expenses found.</p>
+                    <div class="text-center py-16 bg-white rounded-[24px] border border-dashed border-slate-200">
+                        <div class="w-16 h-16 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-slate-500 font-bold">No expenses found</p>
+                        <p class="text-slate-400 text-[13px] mt-1">Try adjusting your search or filters.</p>
                     </div>
                     @endforelse
                 </div>

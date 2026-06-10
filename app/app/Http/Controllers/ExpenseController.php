@@ -67,13 +67,20 @@ class ExpenseController extends Controller
             'amount' => 'required|numeric',
             'category' => 'required',
             'description' => 'nullable|string',
+            'date' => 'nullable|date',
         ]);
 
-        Expense::create([
+        $expense = new Expense([
             'amount' => $request->amount,
             'category' => $request->category,
             'description' => $request->description,
         ]);
+
+        if ($request->date) {
+            $expense->created_at = $request->date;
+        }
+
+        $expense->save();
 
         return redirect()->route('expenses.index')
             ->with('success', 'Expense added successfully!');
@@ -92,13 +99,20 @@ class ExpenseController extends Controller
             'amount' => 'required|numeric',
             'category' => 'required',
             'description' => 'nullable|string',
+            'date' => 'nullable|date',
         ]);
 
-        $expense->update([
+        $expense->fill([
             'amount' => $request->amount,
             'category' => $request->category,
             'description' => $request->description,
         ]);
+
+        if ($request->date) {
+            $expense->created_at = $request->date;
+        }
+
+        $expense->save();
 
         return redirect()->route('expenses.index')
             ->with('success', 'Expense updated successfully!');
