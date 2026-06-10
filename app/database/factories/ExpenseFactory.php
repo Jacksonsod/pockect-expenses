@@ -22,7 +22,7 @@ class ExpenseFactory extends Factory
             'amount' => $this->faker->numberBetween(1000, 50000),
 
             // Randomly picks one category from this array
-            'category' => $this->faker->randomElement(['Transport', 'Logistics', 'Food & Refreshments', 'Internet Bundle']),
+            'category' => $this->faker->randomElement(['Transport', 'Logistics' , 'Food & Refreshments', 'Internet Bundle']),
 
             // Generates a short, realistic sentence for the description
             'description' => $this->faker->sentence(6),
