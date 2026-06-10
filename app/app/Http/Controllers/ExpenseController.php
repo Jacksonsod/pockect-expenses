@@ -36,12 +36,28 @@ class ExpenseController extends Controller
             return $item;
         });
 
+        // 5. Get recent expenses with filtering and pagination
+        $query = Expense::query();
+        if (request()->has('search') && request('search') != '') {
+            $search = request('search');
+            $query->where('description', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%");
+        }
+        if (request()->has('category') && request('category') != 'All Categories' && request('category') != '') {
+            $query->where('category', request('category'));
+        }
+        $recentExpenses = $query->latest()->paginate(5)->withQueryString();
+
+        $allCategories = Expense::select('category')->distinct()->pluck('category');
+
         // Pass all dynamic aggregates directly to your view layout
         return view('expenses.index', [
             'totalAllTime' => $totalAllTime,
             'totalThisMonth' => $totalThisMonth,
             'totalEntries' => $totalEntries,
-            'categoryBalances' => $categoryBalances
+            'categoryBalances' => $categoryBalances,
+            'recentExpenses' => $recentExpenses,
+            'allCategories' => $allCategories,
         ]);
     }
 
@@ -50,7 +66,7 @@ class ExpenseController extends Controller
      */
     public function create()
     {
-        return view('expenses.create');
+        return redirect()->route('expenses.index')->with('openAddModal', true);
     }
 
     /**
@@ -58,7 +74,17 @@ class ExpenseController extends Controller
      */
     public function store(StorePocketExpenseRequest $request)
     {
-        Expense::create($request->validated());
+        $data = $request->validated();
+        $data['description'] = $data['description'] ?? '';
+
+        $expense = new Expense();
+        $expense->amount = $data['amount'];
+        $expense->category = $data['category'];
+        $expense->description = $data['description'];
+        if (!empty($data['date'])) {
+            $expense->created_at = $data['date'];
+        }
+        $expense->save();
 
         return redirect()->route('expenses.index')
             ->with('success', 'Expense logged successfully.');
@@ -85,7 +111,16 @@ class ExpenseController extends Controller
      */
     public function update(UpdatePocketExpenseRequest $request, Expense $expense)
     {
-        $expense->update($request->validated());
+        $data = $request->validated();
+        if (array_key_exists('description', $data)) {
+            $data['description'] = $data['description'] ?? '';
+        }
+
+        $expense->fill($data);
+        if (!empty($data['date'])) {
+            $expense->created_at = $data['date'];
+        }
+        $expense->save();
 
         return redirect()->route('expenses.index')
             ->with('success', 'Expense updated successfully.');

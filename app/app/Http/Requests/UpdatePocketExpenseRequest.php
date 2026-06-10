@@ -26,7 +26,8 @@ class UpdatePocketExpenseRequest extends FormRequest
             // 'sometimes' means: if 'amount' is in the form, it MUST be a required integer >= 1
             'amount' => ['sometimes', 'required', 'integer', 'min:1', 'max:2147483647'],
             'category' => ['sometimes', 'required', 'string', 'max:255'],
-            'description' => ['sometimes', 'required', 'string', 'max:5000'],
+            'description' => ['sometimes', 'nullable', 'string', 'max:5000'],
+            'date' => ['sometimes', 'nullable', 'date'],
         ];
     }
 }
