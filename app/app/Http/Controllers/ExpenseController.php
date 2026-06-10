@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePocketExpenseRequest;
+use App\Http\Requests\UpdatePocketExpenseRequest;
 use Illuminate\Http\Request;
 use App\Models\Expense;
 use Illuminate\Support\Facades\DB;
 
 class ExpenseController extends Controller
 {
-    // 📊 INDEX
+
     public function index()
     {
         $totalAllTime = Expense::sum('amount');
@@ -54,71 +56,31 @@ class ExpenseController extends Controller
         ]);
     }
 
-    // ➕ CREATE
     public function create()
     {
         return redirect()->route('expenses.index')->with('openAddModal', true);
     }
 
-    // 💾 STORE
-    public function store(Request $request)
+    public function store(StorePocketExpenseRequest $request)
     {
-        $request->validate([
-            'amount' => 'required|numeric',
-            'category' => 'required',
-            'description' => 'nullable|string',
-            'date' => 'nullable|date',
-        ]);
-
-        $expense = new Expense([
-            'amount' => $request->amount,
-            'category' => $request->category,
-            'description' => $request->description,
-        ]);
-
-        if ($request->date) {
-            $expense->created_at = $request->date;
-        }
-
-        $expense->save();
+        Expense::create($request->validated());
 
         return redirect()->route('expenses.index')
-            ->with('success', 'Expense added successfully!');
+            ->with('success', 'Expense logged successfully.');
     }
 
-    // ✏️ EDIT
     public function edit(Expense $expense)
     {
         return view('expenses.edit', compact('expense'));
     }
 
-    // 🔄 UPDATE
-    public function update(Request $request, Expense $expense)
+    public function update(UpdatePocketExpenseRequest $request, Expense $expense)
     {
-        $request->validate([
-            'amount' => 'required|numeric',
-            'category' => 'required',
-            'description' => 'nullable|string',
-            'date' => 'nullable|date',
-        ]);
-
-        $expense->fill([
-            'amount' => $request->amount,
-            'category' => $request->category,
-            'description' => $request->description,
-        ]);
-
-        if ($request->date) {
-            $expense->created_at = $request->date;
-        }
-
-        $expense->save();
-
+        $expense->update($request->validated());
         return redirect()->route('expenses.index')
             ->with('success', 'Expense updated successfully!');
     }
 
-    // ❌ DELETE
     public function destroy(Expense $expense)
     {
         $expense->delete();
