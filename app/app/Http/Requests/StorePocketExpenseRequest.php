@@ -25,7 +25,8 @@ class StorePocketExpenseRequest extends FormRequest
         return [
             'amount' => ['required', 'integer', 'min:1', 'max:2147483647'],
             'category' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string', 'max:5000'],
+            'description' => ['nullable', 'string', 'max:5000'],
+            'date' => ['nullable', 'date'],
         ];
     }
     public function messages(): array
